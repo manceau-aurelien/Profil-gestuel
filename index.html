@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>La Trinité Gestuelle — Exploration Incrémentale des 8 Familles &amp; 32 Profils</title>
+<title>La Trinité Gestuelle V9 — Exploration Incrémentale des 8 Familles &amp; 32 Profils</title>
 <style>
 :root {
   --bg-dark: #0f172a;
@@ -352,7 +352,7 @@ body.in-neant {
 }
 
 #sidePanel {
-  position: fixed; top: 16px; right: 16px; bottom: 72px;
+  position: fixed; top: 64px; right: 16px; bottom: 72px; /* V9 : sous le bouton « Quitter », le ✕ reste cliquable */
   width: 440px; max-width: calc(100vw - 24px);
   background: rgba(10, 14, 28, 0.94);
   backdrop-filter: blur(20px);
@@ -501,8 +501,12 @@ body.in-neant {
   pointer-events: none; font-size: 11.5px; color: #cbd5e1;
   background: rgba(15, 23, 42, 0.72); padding: 7px 13px; border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.18); backdrop-filter: blur(6px);
-  width: fit-content; max-width: calc(100vw - 24px);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  width: fit-content; max-width: calc(100vw - 240px); /* V9 : laisse la place au bouton « Quitter » */
+  white-space: normal; line-height: 1.35; border-radius: 16px;
+}
+@media (max-width: 680px) {
+  /* V9 : sur téléphone, la consigne passe sous le bouton « Quitter » et reste lisible en entier */
+  .hint-top { top: 56px; max-width: calc(100vw - 24px); font-size: 11px; }
 }
 
 /* LIENS DES PERSONNES DANS LES FAMILLES & LA LISTE */
@@ -1624,6 +1628,14 @@ body[data-illumination="8"] .top-nav {
 <!-- ===================================================================== -->
 <div id="odysseeView">
   <div class="container">
+    <!-- V9 : BANNIÈRE CODE CRÉATEUR (avancement réel protégé) -->
+    <div id="demoBanner" style="display:none; position:sticky; top:8px; z-index:40; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:10px; padding:10px 14px; border-radius:12px; background:rgba(60,40,8,0.96); border:1.5px solid #f59e0b; color:#fde68a; font-size:12.5px; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+      <span>🛡️ Code créateur actif : aperçu complet du projet. Rien n'est enregistré, l'avancement réel est protégé.</span>
+      <span style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-secondary" style="border-color:#f59e0b; color:#fde68a; font-weight:900; padding:6px 12px;" onclick="desactiverModeCreateur()" title="Remet exactement l'état d'avant">↩ Désactiver (retour à l'état d'avant)</button>
+      </span>
+    </div>
+
     <!-- BARRE SUPÉRIEURE ÉPURÉE -->
     <div class="top-nav">
       <div class="brand" style="cursor:pointer;" onclick="goStep(1)">
@@ -1666,15 +1678,18 @@ body[data-illumination="8"] .top-nav {
         <button class="creator-discrete-trigger" onclick="exporterGuildeJSON()" title="Exporter tous les profils enregistrés dans un fichier JSON">💾 Exporter JSON</button>
         <button class="creator-discrete-trigger" onclick="declencherImportJSON()" title="Importer une sauvegarde JSON de profils">📂 Importer JSON</button>
         <button class="creator-discrete-trigger" onclick="ouvrirFicheImprimable()" title="Ouvrir la fiche récapitulative imprimable de la collection">🖨️ Fiche récapitulative imprimable</button>
-        <button class="creator-discrete-trigger" onclick="toggleCreatorTools()">⚙️ Paliers de démonstration</button>
+        <button class="creator-discrete-trigger" id="btnDemoTools" onclick="toggleCreatorTools()">🔒 Code créateur</button>
       </div>
     </div>
 
     <div id="creatorFooterPanel" style="display:none; margin-top:10px; padding:12px 16px; border-radius:12px; background:rgba(15,23,42,0.92); border:1px dashed #475569; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-      <div style="font-size:12px; color:#cbd5e1; font-weight:700;">
-        🧪 Simuler un palier de progression :
+      <div style="font-size:12px; color:#cbd5e1; font-weight:700; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <span>🛡️ Code créateur : aperçu &amp; paliers de test</span>
+        <button class="btn-secondary" style="font-size:11px; padding:4px 9px; border-color:#f59e0b; color:#fde68a;" onclick="desactiverModeCreateur()" title="Remet exactement l'état d'avant">↩ Désactiver le code créateur</button>
       </div>
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button class="btn-secondary" style="font-size:11.5px; padding:6px 10px; border-color:#10b981; color:#6ee7b7; font-weight:900;" onclick="apercuCompletCreateur()">👑 Aperçu complet (tout débloqué)</button>
+        <button class="btn-secondary" style="font-size:11.5px; padding:6px 10px; border-color:#94a3b8; color:#e2e8f0;" onclick="voirAvancementReel()">📋 Avancement réel de la personne</button>
         <button class="btn-secondary" style="font-size:11.5px; padding:6px 10px;" onclick="simulerProgression(0)">🌑 Niv. 1 (0/8)</button>
         <button class="btn-secondary" style="font-size:11.5px; padding:6px 10px;" onclick="simulerProgression(1)">🕯️ Niv. 2 &amp; 3 (1/8 Famille)</button>
         <button class="btn-secondary" style="font-size:11.5px; padding:6px 10px;" onclick="simulerProgression(3)">✨ Niv. 3 (3/8 Familles)</button>
@@ -1830,6 +1845,25 @@ body[data-illumination="8"] .top-nav {
     </div>
   </div>
 </div>
+<!-- V9 : sortie du code créateur toujours accessible (y compris dans Le Néant, où le bandeau du haut est masqué) -->
+<div id="demoFloatBar">
+  <span class="dfb-label">🛡️ Code créateur actif</span>
+  <button class="dfb-off" onclick="desactiverModeCreateur()" title="Remet exactement l'état d'avant">↩ Désactiver</button>
+</div>
+<style>
+#demoFloatBar { display:none; position:fixed; left:16px; bottom:16px; z-index:9000; align-items:center; gap:8px;
+  padding:7px 10px; border-radius:999px; background:rgba(60,40,8,0.94); border:1.5px solid #f59e0b; color:#fde68a;
+  font-size:11.5px; font-weight:800; box-shadow:0 8px 24px rgba(0,0,0,0.6); backdrop-filter:blur(8px); }
+body.demo-on #demoFloatBar { display:flex; }
+body.in-neant.demo-on #demoFloatBar { bottom:76px; }
+#demoFloatBar button { background:transparent; border:1px solid #f59e0b; color:#fde68a; padding:5px 10px; border-radius:999px; font-size:11.5px; font-weight:800; cursor:pointer; }
+#demoFloatBar button:hover { background:rgba(245,158,11,0.2); }
+#demoFloatBar .dfb-off { border-color:#ef4444; color:#fca5a5; }
+@media (max-width: 680px) {
+  #demoFloatBar { left:12px; right:12px; bottom:12px; justify-content:space-between; }
+  body.in-neant.demo-on #demoFloatBar { bottom:74px; }
+}
+</style>
 <div id="toastContainer"></div>
 
 <!-- INPUT FICHIER CACHÉ POUR L'IMPORTATION JSON -->
@@ -2865,7 +2899,10 @@ let state = {
   masterUnlockAll: false,
   showCreatorTools: false,
   progressionMenuOpen: false,
-  guilde: []
+  guilde: [],
+  // V9 : code créateur (aperçu complet isolé : ne touche jamais à l'avancement réel sauvegardé)
+  modeDemo: false,      // true = code créateur actif
+  guildeReelle: null    // profils réels de la personne pendant l'aperçu
 };
 
 try {
@@ -3772,6 +3809,10 @@ function renderStep3() {
           <strong>${yProf.nemesisNom}</strong> — Ses trois premiers gestes sont à l'exact opposé des vôtres.
         </div>
 
+        <div style="margin-top:14px; text-align:center;">
+          <button class="btn-secondary" style="border-color:#34d399; color:#6ee7b7; font-weight:800; padding:10px 18px;" onclick="copierProfilEnCours()">📋 Copier ce profil (3 gestes)</button>
+        </div>
+
         ${actionBlockHTML}
       </div>
     `;
@@ -3809,11 +3850,34 @@ function renderStep3() {
   `;
 }
 
+// V9 : un profil ne peut plus être incarné sans nom (avant : un nom automatique était inventé en silence)
+function exigerNomProfil(inp, contexte) {
+  const tc = document.getElementById("toastContainer");
+  if (tc) [...tc.children].forEach(t => { if ((t.textContent || "").includes("Nom requis")) t.remove(); });
+  showToast("⚠️ Nom requis", "Entrez un prénom pour " + contexte + ".", "#ef4444", "⚠️");
+  if (!inp) return;
+  inp.style.borderColor = "#ef4444";
+  inp.style.boxShadow = "0 0 0 3px rgba(239,68,68,0.28)";
+  inp.placeholder = "⚠️ Entrez un prénom pour continuer";
+  try {
+    inp.animate(
+      [{ transform: "translateX(0)" }, { transform: "translateX(-7px)" }, { transform: "translateX(7px)" }, { transform: "translateX(-4px)" }, { transform: "translateX(0)" }],
+      { duration: 320 }
+    );
+  } catch (e) {}
+  inp.focus();
+  if (!inp.dataset.nomListener) {
+    inp.dataset.nomListener = "1";
+    inp.addEventListener("input", () => { inp.style.borderColor = ""; inp.style.boxShadow = ""; });
+  }
+}
+
 function inscrireFamilleStep3() {
   if (!state.bras || !state.oreille || !state.doigt) return;
   const preStats = getCollectionStats();
   const inp = document.getElementById("inputNomStep3");
-  const nom = (inp && inp.value.trim()) || ("Profil " + (state.guilde.length + 1));
+  const nom = inp ? inp.value.trim() : "";
+  if (!nom) { exigerNomProfil(inp, "incarner ce profil"); return; }
   const famKey = canonicalKey([state.oreille, state.doigt, state.bras]);
   const fam = FAMILIES_8[famKey];
   const yProf = CANON_8_PROFILES_SUMMARY[famKey];
@@ -3875,6 +3939,12 @@ function inscrireFamilleStep3() {
       state.lastHighlightedMemberId = null;
     }, 2600);
   }, 120);
+
+  // V9 : proposer de copier le profil juste après l'incarnation
+  setTimeout(() => {
+    const mb = state.guilde.find(x => x.id === newId);
+    if (mb) ouvrirCopieProfil(mb, { apres: true, complet: false });
+  }, 450);
 }
 
 function allerAuxDeuxDerniersGestesDepuisStep3() {
@@ -4221,7 +4291,283 @@ function inspecterFamilleDepuisAtelier(famKey) {
 // (Sans la 9e famille ici : Le Néant est déplacé en Étape 7 comme Objectif Ultime)
 // ============================================================================
 
+// ============================================================================
+// V9 : COPIER / COLLER SON PROFIL
+// Un seul générateur de texte (construireTexteProfil) pour tous les points d'entrée :
+//  - fenêtre « Profil enregistré » qui s'ouvre juste après l'incarnation (3 ou 5 gestes)
+//  - bouton « Copier ce profil » sur la carte du profil (3 gestes et 5 gestes)
+//  - bouton 📋 sur chaque personne enregistrée (niveau 3)
+// Version réduite = menu déroulant fermé ; version complète = menu déroulant ouvert.
+// ============================================================================
+const COPIE_POLE_NOM = {
+  allo: "Extraverti (Allocentrique)", ego: "Introverti (Égocentrique)",
+  cog: "Cognitif", aff: "Affectif",
+  off: "Offensif", def: "Défensif",
+  devoir: "Devoir", savoir: "Savoir",
+  assure: "Impulsif / Assuré", indecis: "Indécis / Prudent"
+};
+let copieCtx = null;          // { membre, complet, apres }
+let revelationEnAttente = false;
+
+function copieNettoyer(s) {
+  return String(s == null ? "" : s).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+// Décompose un profil (3 ou 5 gestes) en gestes + données de la théorie
+function copieAnalyserMembre(m) {
+  const parts = String(m.profKey || m.famKey || "").split("|");
+  const o = parts.find(x => x === "allo" || x === "ego");
+  const d = parts.find(x => x === "cog" || x === "aff");
+  const b = parts.find(x => x === "off" || x === "def");
+  const ma = parts.find(x => x === "devoir" || x === "savoir");
+  const po = parts.find(x => x === "indecis" || x === "assure");
+  if (!o || !d || !b) return null;
+  const cinq = !!(m.profKey && ma && po);
+  const famKey = canonicalKey([o, d, b]);
+  const yProf = CANON_8_PROFILES_SUMMARY[famKey];
+  if (!yProf) return null;
+  const profKey = cinq ? canonicalKey([o, d, b, ma, po]) : null;
+  const adapPair = TRINITE_PILIERS.adaptation.pairs[canonicalKey([o, b])];
+  const rolePair = TRINITE_PILIERS.role.pairs[canonicalKey([b, d])];
+  const intelPair = TRINITE_PILIERS.intelligence.pairs[canonicalKey([o, d])];
+  return {
+    o, d, b, ma, po, cinq, famKey, profKey, yProf,
+    fam: FAMILIES_8[famKey],
+    adapPair, rolePair, intelPair,
+    adapNuance: adapPair && adapPair.nuances[d],
+    roleNuance: rolePair && rolePair.nuances[o],
+    intelNuance: intelPair && intelPair.nuances[b],
+    classic: cinq ? CLASSIC_32_NAMES[profKey] : null,
+    med: cinq ? MEDIEVAL_32[profKey] : null,
+    exec: cinq ? EXECUTION_PAIRS_4[ma + "|" + po] : null
+  };
+}
+
+function construireTexteProfil(m, complet) {
+  const A = copieAnalyserMembre(m);
+  if (!A) return "";
+  const n = copieNettoyer;
+  const y = A.yProf;
+  const nom = n(m.nom) || "Mon profil";
+  const lat = m.estGaucher ? "Gaucher" : "Droitier";
+  const L = [];
+  const sep = "━━━━━━━━━━━━━━━━━━━━";
+
+  L.push("🧬 THÉORIE GESTUELLE — " + (n(m.nom) ? "Profil de " + nom : "Mon profil"));
+  L.push(sep);
+  L.push("");
+
+  if (A.cinq && A.classic) {
+    L.push("👑 PROFIL COMPLET (1 sur 32) : " + (A.med ? A.med.icone + " " : "") + n(A.classic.classic));
+    if (A.classic.desc) L.push(n(A.classic.desc));
+    L.push("");
+  }
+
+  L.push("🏛️ MAISON (1 sur 8) : " + n(y.nom) + " — " + n(y.sousTitre));
+  L.push(n(y.devise));
+  L.push("");
+
+  // --- Gestes ---
+  const nbGestes = A.cinq ? 5 : 3;
+  L.push("🖐️ SES " + nbGestes + " GESTES (" + lat + ")");
+  const gestes = [["Oreille", "oreille", A.o], ["Doigts", "doigt", A.d], ["Bras", "bras", A.b]];
+  if (A.cinq) { gestes.push(["Main", "main", A.ma]); gestes.push(["Poignet", "poignet", A.po]); }
+  gestes.forEach(g => {
+    const pole = getPoleObj(g[1], g[2]);
+    const phys = pole ? n(m.estGaucher ? pole.gaucher : pole.droitier) : "";
+    L.push("• " + g[0] + " : " + phys + " → " + COPIE_POLE_NOM[g[2]]);
+    if (complet && pole) {
+      if (pole.psy) L.push("   Lecture psychologique : " + n(pole.psy));
+      if (pole.neuro) L.push("   Mécanique neuro-cognitive : " + n(pole.neuro));
+    }
+  });
+  if (!A.cinq) L.push("• Main & Poignet : pas encore testés (profil à 3 gestes)");
+  L.push("");
+
+  // --- 3 combinaisons ---
+  L.push("🔺 SES 3 COMBINAISONS");
+  const combos = [
+    ["🤝 Adaptation à l'Autre", y.adaptation, A.adapPair, A.adapNuance],
+    ["⚙️ Rôle dans le groupe", y.role, A.rolePair, A.roleNuance],
+    ["🧠 Type d'intelligence", y.intelligence, A.intelPair, A.intelNuance]
+  ];
+  combos.forEach(c => {
+    const pair = c[2], nuance = c[3];
+    L.push("• " + c[0] + " : " + n(c[1]) + (pair && pair.surnomPaire ? " — " + n(pair.surnomPaire) : ""));
+    if (complet) {
+      if (pair && pair.essence2Vars) L.push("   Le socle (" + n(pair.titrePaire) + ") : " + n(pair.essence2Vars));
+      if (nuance && nuance.analyse) L.push("   Précisé par le " + n(nuance.thirdLabel) + " : " + n(nuance.analyse));
+    } else if (nuance && nuance.analyse) {
+      L.push("   " + n(nuance.analyse));
+    }
+  });
+  L.push("");
+
+  // --- Portrait ---
+  L.push("✨ PORTRAIT");
+  L.push(n(y.canon_portrait));
+  L.push("");
+  L.push("⚡ Force naturelle : " + n(y.force));
+  L.push("⚠️ Point de vigilance : " + n(y.faiblesse));
+  if (y.nemesisNom) L.push("🔄 Opposé polaire (Némésis) : " + n(y.nemesisNom) + " — ses 3 premiers gestes sont à l'exact opposé des siens.");
+  L.push("");
+
+  // --- 5 gestes : exécution, quotidien, rupture, évolution ---
+  if (A.cinq && A.med) {
+    L.push("🎯 SON PROFIL D'EXÉCUTION");
+    if (A.exec) L.push("• Mode d'exécution (Main + Poignet) : " + n(A.exec.nom) + " — " + n(A.exec.resume));
+    if (A.exec && complet && A.exec.neuro) L.push("   Mécanique d'exécution : " + n(A.exec.neuro));
+    if (A.med.vrai_vie) L.push("• Au quotidien : " + n(A.med.vrai_vie));
+    if (A.med.cerveau) L.push("• Fonctionnement interne : " + n(A.med.cerveau));
+    if (A.med.kryptonite) L.push("• Point de rupture : " + n(A.med.kryptonite));
+    if (A.med.quete) L.push("• Voie d'évolution : " + n(A.med.quete));
+    L.push("");
+    if (complet && A.med.p5) {
+      L.push("🔬 ANALYSE APPROFONDIE DES 5 GESTES");
+      const p5 = A.med.p5;
+      if (p5.illusion) L.push("1. L'apparence sociale : " + n(p5.illusion));
+      if (p5.mecanique) L.push("2. La mécanique interne : " + n(p5.mecanique));
+      if (p5.machine) L.push("3. L'architecture cognitive : " + n(p5.machine));
+      if (p5.rupture) L.push("4. Le point de rupture : " + n(p5.rupture));
+      if (p5.evolution) L.push("5. La voie d'évolution : " + n(p5.evolution));
+      L.push("");
+    }
+  }
+
+  if (complet && A.fam && A.fam.resume_court) {
+    L.push("🏰 LA MAISON " + n(y.nom).toUpperCase());
+    L.push(n(A.fam.resume_court));
+    if (A.fam.medieval_role) L.push("Rôle dans l'Archipel : " + n(A.fam.medieval_role));
+    L.push("");
+  }
+
+  L.push(sep);
+  L.push("— La Trinité Gestuelle • " + (complet ? "version complète" : "version réduite"));
+  return L.join("\n");
+}
+
+// Titre court du profil pour l'en-tête de la fenêtre
+function copieTitreProfil(m) {
+  const A = copieAnalyserMembre(m);
+  if (!A) return "";
+  if (A.cinq && A.classic) return A.classic.classic + " • " + A.yProf.nom;
+  return A.yProf.nom + " (profil à 3 gestes)";
+}
+
+function ouvrirCopieProfil(membre, opts) {
+  opts = opts || {};
+  if (!membre || !copieAnalyserMembre(membre)) return;
+  fermerCopieProfil(true);
+  copieCtx = { membre, complet: !!opts.complet, apres: !!opts.apres };
+  const mo = document.createElement("div");
+  mo.id = "copieProfilModal";
+  mo.style.cssText = "position:fixed; inset:0; z-index:9998; display:flex; align-items:center; justify-content:center; padding:14px; background:rgba(2,6,23,0.84); backdrop-filter:blur(6px);";
+  mo.onclick = (e) => { if (e.target === mo) fermerCopieProfil(); };
+  mo.innerHTML = `
+    <div style="width:100%; max-width:640px; max-height:94vh; overflow:auto; background:#0f172a; border:1.5px solid #10b981; border-radius:18px; padding:20px; box-shadow:0 24px 60px rgba(0,0,0,0.7); text-align:left;">
+      <div style="font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:0.6px; color:#6ee7b7;" id="copieTitre"></div>
+      <h3 style="margin:6px 0 4px 0; font-size:19px; color:#fff;" id="copieNomProfil"></h3>
+      <p style="margin:0 0 12px 0; font-size:12.5px; color:#94a3b8; line-height:1.5;">Copiez ce texte pour le coller dans un message, une note ou un document.</p>
+      <button id="copieToggle" class="btn-secondary" style="width:100%; border-color:#818cf8; color:#c7d2fe; margin-bottom:10px;" onclick="basculerCopieComplete()"></button>
+      <div id="copieInfo" style="font-size:11.5px; color:#94a3b8; margin-bottom:6px;"></div>
+      <textarea id="copieProfilTexte" readonly spellcheck="false" style="width:100%; height:min(46vh, 340px); resize:vertical; padding:12px; border-radius:10px; border:1px solid #334155; background:#020617; color:#e2e8f0; font-size:12.5px; line-height:1.55; font-family:inherit;"></textarea>
+      <div style="display:flex; gap:10px; margin-top:12px; justify-content:flex-end; flex-wrap:wrap;">
+        <button class="btn-secondary" onclick="fermerCopieProfil()">Fermer</button>
+        <button id="copieBtn" class="next-btn" style="margin:0; width:auto; padding:11px 20px;" onclick="copierTexteProfil()"></button>
+      </div>
+    </div>`;
+  document.body.appendChild(mo);
+  mo.addEventListener("keydown", (e) => { if (e.key === "Escape") fermerCopieProfil(); });
+  rafraichirCopieProfil();
+  setTimeout(() => { const b = document.getElementById("copieBtn"); if (b) b.focus(); }, 60);
+}
+
+function rafraichirCopieProfil() {
+  if (!copieCtx) return;
+  const m = copieCtx.membre, complet = copieCtx.complet;
+  const txt = construireTexteProfil(m, complet);
+  const ta = document.getElementById("copieProfilTexte");
+  if (ta) { ta.value = txt; ta.scrollTop = 0; }
+  const nom = copieNettoyer(m.nom) || "Mon profil";
+  const t = document.getElementById("copieTitre");
+  if (t) t.textContent = copieCtx.apres ? "✅ Profil enregistré — à copier si vous voulez" : "📋 Copier ce profil";
+  const h = document.getElementById("copieNomProfil");
+  if (h) h.textContent = nom + " — " + copieTitreProfil(m);
+  const tg = document.getElementById("copieToggle");
+  if (tg) tg.textContent = complet ? "▾ Masquer l'analyse approfondie (revenir à la version réduite)" : "▸ Ouvrir l'analyse approfondie (version complète)";
+  const inf = document.getElementById("copieInfo");
+  if (inf) inf.textContent = (complet ? "Version complète" : "Version réduite") + " • " + txt.length.toLocaleString("fr-FR") + " caractères";
+  const btn = document.getElementById("copieBtn");
+  if (btn) btn.textContent = "📋 Copier la version " + (complet ? "complète" : "réduite");
+}
+
+function basculerCopieComplete() {
+  if (!copieCtx) return;
+  copieCtx.complet = !copieCtx.complet;
+  rafraichirCopieProfil();
+}
+
+async function copierTexteProfil() {
+  const ta = document.getElementById("copieProfilTexte");
+  if (!ta) return;
+  const txt = ta.value;
+  const complet = copieCtx ? copieCtx.complet : false;
+  let ok = false;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(txt);
+      ok = true;
+    }
+  } catch (e) { ok = false; }
+  if (!ok) {
+    try {
+      ta.removeAttribute("readonly");
+      ta.focus(); ta.select(); ta.setSelectionRange(0, txt.length);
+      ok = document.execCommand("copy");
+      ta.setAttribute("readonly", "");
+    } catch (e) { ok = false; }
+  }
+  if (ok) {
+    showToast("Profil copié", "Version " + (complet ? "complète" : "réduite") + " (" + txt.length.toLocaleString("fr-FR") + " caractères) — vous pouvez le coller.", "#10b981", "📋");
+  } else {
+    ta.removeAttribute("readonly"); ta.focus(); ta.select(); ta.setAttribute("readonly", "");
+    showToast("Copie automatique impossible", "Le texte est sélectionné : faites Ctrl+C (ou « Copier » sur téléphone).", "#f59e0b", "⚠️");
+  }
+  return ok;
+}
+
+function fermerCopieProfil(silencieux) {
+  const mo = document.getElementById("copieProfilModal");
+  if (mo) mo.remove();
+  copieCtx = null;
+  if (!silencieux && revelationEnAttente) {
+    revelationEnAttente = false;
+    setTimeout(() => ouvrirVerrouDemo(true), 250);
+  }
+}
+
+// Bouton « Copier ce profil » des cartes (étape 3 = 3 gestes, étape 6 = 5 gestes)
+function copierProfilEnCours() {
+  if (state.step === 6 && state.bras && state.oreille && state.doigt && state.main && state.poignet) {
+    const myKey = canonicalKey([state.oreille, state.doigt, state.bras, state.main, state.poignet]);
+    const inp = document.getElementById("inputNomJoueur32");
+    const nom = (inp && inp.value.trim()) || state.inspectedMemberName || state.tempPendingName || "";
+    ouvrirCopieProfil({ nom, famKey: canonicalKey([state.oreille, state.doigt, state.bras]), profKey: state.viewedSubKey || myKey, estGaucher: !!state.estGaucher }, { complet: !!state.showFullClinical });
+  } else if (state.bras && state.oreille && state.doigt) {
+    const inp = document.getElementById("inputNomStep3");
+    const nom = (inp && inp.value.trim()) || "";
+    ouvrirCopieProfil({ nom, famKey: canonicalKey([state.oreille, state.doigt, state.bras]), profKey: null, estGaucher: !!state.estGaucher }, { complet: false });
+  }
+}
+
+// Bouton 📋 d'une personne déjà enregistrée
+function copierProfilMembre(id) {
+  const m = state.guilde.find(x => x.id === id);
+  if (m) ouvrirCopieProfil(m, { complet: false });
+}
+
 function sauverSuitesGuildeStorage() {
+  if (state.modeDemo) return; // V9 : rien n'est écrit pendant le code créateur (avancement réel protégé)
   try {
     localStorage.setItem("architecture_gestuelle_v2_guilde", JSON.stringify(state.guilde));
   } catch (e) {}
@@ -4360,6 +4706,7 @@ function renderStep5Familles() {
               </div>
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
+              <button class="btn-secondary" style="color:#6ee7b7; padding:5px 10px;" onclick="event.stopPropagation(); copierProfilMembre('${m.id}')" title="Copier le profil">📋</button>
               <button class="btn-secondary" style="color:#fb7185; padding:5px 10px;" onclick="event.stopPropagation(); supprimerMembre(${idx})" title="Retirer">✕</button>
             </div>
           </div>
@@ -4694,6 +5041,12 @@ function renderStep6MainPoignet() {
             ` : ''}
           </div>
 
+          <div style="margin-top:12px;">
+            <button class="btn-secondary" style="width:100%; border-color:#34d399; color:#6ee7b7; font-weight:800;" onclick="copierProfilEnCours()">
+              📋 Copier ce profil (${state.showFullClinical ? 'version complète' : 'version réduite'})
+            </button>
+          </div>
+
           <div style="margin-top:18px; padding-top:16px; border-top:1px solid var(--border); display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
             <input type="text" id="inputNomJoueur32" value="${(state.inspectedMemberName || state.tempPendingName || '').replace(/"/g, '&quot;')}" placeholder="Prénom de la personne..." style="flex:1; min-width:200px; padding:12px 14px; border-radius:10px; border:1px solid var(--border); background:#0f172a; color:#fff; font-size:14px;">
             <button class="next-btn" style="margin-top:0; width:auto; padding:12px 20px;" onclick="sauverProfilComplet32()">
@@ -4803,7 +5156,9 @@ function sauverProfilComplet32() {
   const inp = document.getElementById("inputNomJoueur32");
   const famKey = canonicalKey([state.oreille, state.doigt, state.bras]);
   const yProf = CANON_8_PROFILES_SUMMARY[famKey];
-  const nom = (inp && inp.value.trim()) || state.inspectedMemberName || (yProf ? yProf.nom : "Profil " + (state.guilde.length + 1));
+  const existantNomme = state.completingMemberId ? state.guilde.find(x => x.id === state.completingMemberId) : null;
+  const nom = (inp && inp.value.trim()) || (existantNomme && existantNomme.nom) || state.inspectedMemberName || "";
+  if (!nom) { exigerNomProfil(inp, "enregistrer ce profil complet"); return; }
   const profKey = state.viewedSubKey || canonicalKey([state.oreille, state.doigt, state.bras, state.main, state.poignet]);
   const cl32 = CLASSIC_32_NAMES[profKey];
   let updatedMemberId = null;
@@ -4818,7 +5173,10 @@ function sauverProfilComplet32() {
       updatedMemberId = existing.id;
     }
   } else {
-    const existingInFam = state.guilde.find(x => x.famKey === famKey && !x.profKey);
+    // V9 : on ne complète une fiche à 3 gestes existante que si c'est le MÊME prénom
+    // (avant : la première personne de la famille était écrasée par n'importe quel nouveau prénom)
+    const nomNorm = nom.trim().toLowerCase();
+    const existingInFam = state.guilde.find(x => x.famKey === famKey && !x.profKey && String(x.nom || "").trim().toLowerCase() === nomNorm);
     if (existingInFam) {
       existingInFam.nom = nom;
       existingInFam.profKey = profKey;
@@ -4846,6 +5204,7 @@ function sauverProfilComplet32() {
   const postStats = getCollectionStats();
   const latLabel = state.estGaucher ? "🤚 Gaucher" : "✋ Droitier";
   const titrCl = cl32 ? cl32.classic : (yProf ? yProf.nom : "Profil 5 gestes");
+  verifierCompletion100(); // V9 : à 32/32 profils complets, le code du mode démo est révélé
 
   showToast(
     `👑 ${nom} — Profil Complet Validé !`,
@@ -4870,6 +5229,13 @@ function sauverProfilComplet32() {
       }, 2600);
     }, 120);
   }
+
+  // V9 : proposer de copier le profil juste après la validation (réduit, ou complet si l'analyse approfondie était ouverte)
+  const completAvant = !!state.showFullClinical;
+  setTimeout(() => {
+    const mb = state.guilde.find(x => x.id === updatedMemberId);
+    if (mb) ouvrirCopieProfil(mb, { apres: true, complet: completAvant });
+  }, 450);
 }
 
 // NIVEAU 5 (STEP 7) : L'OBJECTIF ULTIME — LE SANCTUAIRE DU NÉANT
@@ -5032,11 +5398,168 @@ function renderStep7ObjectifNeant() {
 // OUTIL CRÉATEUR DISCRET EN BAS DE PAGE (POUR TESTER LES 6 NIVEAUX SÉQUENTIELS)
 // ============================================================================
 function toggleCreatorTools() {
+  // Code créateur inactif : on demande le code. Actif : on ouvre/ferme le panneau de paliers de test.
+  if (!state.modeDemo) { ouvrirVerrouDemo(); return; }
   state.showCreatorTools = !state.showCreatorTools;
+  render();
+  if (state.showCreatorTools) {
+    setTimeout(() => {
+      const p = document.getElementById("creatorFooterPanel");
+      if (p) p.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 60);
+  }
+}
+
+// ============================================================================
+// V9 : CODE CRÉATEUR
+// Un interrupteur : « activer » affiche tout de suite l'aperçu du projet fini (tout est
+// débloqué) ; « désactiver » remet EXACTEMENT l'état d'avant (avancement, gestes choisis,
+// étape, latéralité). Pendant l'aperçu, rien n'est écrit dans la mémoire du navigateur :
+// l'avancement réel de la personne n'est jamais modifié, même si la page est rechargée.
+// Le code est donné à ceux qui complètent l'application à 100 % (32 profils de 5 gestes).
+// Note : verrou « de courtoisie » côté navigateur (il empêche d'activer le code créateur par
+// curiosité, pas de contourner volontairement en lisant le code source).
+// ============================================================================
+const CREATOR_CODE_B64 = "TWFuY2VhdQ==";
+const CREATOR_STORAGE_REVEALED = "trinite_v9_code_revele";
+let creatorSnapshot = null; // copie fidèle de l'état réel, restaurée à la désactivation
+
+function demoCodeAttendu() { return atob(CREATOR_CODE_B64); }
+
+function profilsCompletsReels() {
+  const g = state.modeDemo ? (state.guildeReelle || []) : state.guilde;
+  return new Set(g.filter(x => x && x.profKey).map(x => x.profKey)).size;
+}
+function applicationComplete() { return profilsCompletsReels() >= 32; }
+
+// « Le code créateur est-il actif ? » (il n'est jamais mémorisé : le code est redemandé à chaque activation)
+function demoDebloquee() { return !!state.modeDemo; }
+
+function ouvrirVerrouDemo(felicitations) {
+  let m = document.getElementById("demoLockModal");
+  if (m) m.remove();
+  const nb = Math.min(32, profilsCompletsReels());
+  const complete = applicationComplete();
+  const pct = Math.round((nb / 32) * 100);
+  m = document.createElement("div");
+  m.id = "demoLockModal";
+  m.style.cssText = "position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(2,6,23,0.82); backdrop-filter:blur(6px);";
+  m.onclick = (e) => { if (e.target === m) fermerVerrouDemo(); };
+  m.innerHTML = `
+    <div style="width:100%; max-width:440px; background:#0f172a; border:1.5px solid ${complete ? '#10b981' : '#f59e0b'}; border-radius:18px; padding:22px; box-shadow:0 24px 60px rgba(0,0,0,0.7); text-align:left;">
+      <div style="font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:0.6px; color:${complete ? '#6ee7b7' : '#fbbf24'};">
+        ${complete ? '🏆 Application complétée à 100 %' : '🔒 Code créateur'}
+      </div>
+      <p style="margin:10px 0 12px 0; font-size:13.5px; line-height:1.55; color:#e2e8f0;">
+        ${complete
+          ? (felicitations ? '<strong>Bravo, vous avez réuni les 32 profils de 5 gestes !</strong> ' : '') + 'Le code créateur est à vous. Voici votre code : <strong style="color:#fde68a; font-size:15px; letter-spacing:0.5px;">' + demoCodeAttendu() + '</strong>'
+          : 'Le code créateur affiche l\'aperçu complet du projet, tout débloqué. Il est donné à ceux qui complètent l\'application à 100 % (<strong>32 profils de 5 gestes</strong>).'}
+      </p>
+      <div style="font-size:11.5px; color:#94a3b8; margin-bottom:5px;">Profils complets : <strong style="color:#fff;">${nb} / 32</strong></div>
+      <div style="height:7px; border-radius:99px; background:#1e293b; overflow:hidden; margin-bottom:14px;"><div style="height:100%; width:${pct}%; background:linear-gradient(90deg,#f59e0b,#10b981);"></div></div>
+      <input type="password" id="demoCodeInput" placeholder="Code créateur" autocomplete="off" style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid #334155; background:#090d16; color:#fff; font-size:14px;">
+      <div id="demoCodeError" style="display:none; margin-top:8px; font-size:12.5px; font-weight:800; color:#fca5a5;">⚠️ Code incorrect. Réessayez.</div>
+      <div style="display:flex; gap:10px; margin-top:14px; justify-content:flex-end; flex-wrap:wrap;">
+        <button class="btn-secondary" onclick="fermerVerrouDemo()">Annuler</button>
+        <button class="next-btn" style="margin:0; width:auto; padding:10px 20px;" onclick="validerCodeDemo()">🔓 Activer</button>
+      </div>
+    </div>`;
+  document.body.appendChild(m);
+  const inp = document.getElementById("demoCodeInput");
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") validerCodeDemo(); if (e.key === "Escape") fermerVerrouDemo(); });
+  inp.addEventListener("input", () => { inp.style.borderColor = "#334155"; document.getElementById("demoCodeError").style.display = "none"; });
+  setTimeout(() => inp.focus(), 50);
+}
+
+function fermerVerrouDemo() {
+  const m = document.getElementById("demoLockModal");
+  if (m) m.remove();
+}
+
+function validerCodeDemo() {
+  const inp = document.getElementById("demoCodeInput");
+  if (!inp) return;
+  const saisi = inp.value.trim().toLowerCase();
+  if (saisi && saisi === demoCodeAttendu().toLowerCase()) {
+    fermerVerrouDemo();
+    activerModeCreateur();
+  } else {
+    const err = document.getElementById("demoCodeError");
+    if (err) err.style.display = "block";
+    inp.style.borderColor = "#ef4444";
+    try { inp.animate([{ transform: "translateX(0)" }, { transform: "translateX(-7px)" }, { transform: "translateX(7px)" }, { transform: "translateX(-4px)" }, { transform: "translateX(0)" }], { duration: 320 }); } catch (e) {}
+    inp.select();
+  }
+}
+
+// Révèle le code une seule fois, au moment où l'application passe à 100 %
+function verifierCompletion100() {
+  if (!applicationComplete()) return;
+  let deja = false;
+  try { deja = localStorage.getItem(CREATOR_STORAGE_REVEALED) === "1"; } catch (e) {}
+  if (deja) return;
+  try { localStorage.setItem(CREATOR_STORAGE_REVEALED, "1"); } catch (e) {}
+  setTimeout(() => { if (document.getElementById("copieProfilModal")) { revelationEnAttente = true; } else { ouvrirVerrouDemo(true); } }, 700);
+}
+
+// ACTIVER : mémorise l'état réel, puis affiche l'aperçu complet du projet
+function activerModeCreateur() {
+  if (state.modeDemo) return;
+  creatorSnapshot = JSON.parse(JSON.stringify(state));
+  state.guildeReelle = creatorSnapshot.guilde || [];
+  state.modeDemo = true;
+  state.showCreatorTools = false;
+  state.guilde = JSON.parse(JSON.stringify(creatorSnapshot.guilde || []));
+  state.masterUnlockAll = true;
+  render();
+  showToast("🛡️ Code créateur activé", "Aperçu complet du projet. Rien n'est enregistré : l'avancement réel est protégé.", "#10b981", "🛡️");
+}
+
+// Dans le code créateur : revenir à l'aperçu complet (tout débloqué), avec les profils réels de la personne
+function apercuCompletCreateur() {
+  if (!state.modeDemo) { ouvrirVerrouDemo(); return; }
+  state.guilde = JSON.parse(JSON.stringify((creatorSnapshot && creatorSnapshot.guilde) || []));
+  state.masterUnlockAll = true;
   render();
 }
 
+// Dans le code créateur : voir l'avancement réel de la personne (sans quitter le code créateur)
+function voirAvancementReel() {
+  if (!state.modeDemo) { ouvrirVerrouDemo(); return; }
+  state.guilde = JSON.parse(JSON.stringify((creatorSnapshot && creatorSnapshot.guilde) || []));
+  state.masterUnlockAll = false;
+  render();
+}
+
+// DÉSACTIVER : restaure exactement l'état d'avant, puis le code est de nouveau demandé pour réactiver
+function desactiverModeCreateur() {
+  if (!state.modeDemo) return;
+  // Sortir du Néant d'abord s'il est ouvert
+  if (document.body.classList.contains("in-neant")) { try { exitNeantView(); } catch (e) {} }
+  const snap = creatorSnapshot;
+  if (snap) {
+    Object.keys(state).forEach(k => { if (!(k in snap)) delete state[k]; });
+    Object.assign(state, JSON.parse(JSON.stringify(snap)));
+  }
+  state.modeDemo = false;
+  state.masterUnlockAll = false;
+  state.showCreatorTools = false;
+  state.guildeReelle = null;
+  creatorSnapshot = null;
+  document.body.classList.remove("demo-on");
+  fermerVerrouDemo();
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  showToast("✅ Code créateur désactivé", "Retour à l'état d'avant, avec l'avancement d'origine.", "#10b981", "✅");
+}
+
+// Anciens noms conservés pour compatibilité
+function quitterDemo() { desactiverModeCreateur(); }
+function reverrouillerDemo() { desactiverModeCreateur(); }
+
+// Paliers de test (uniquement avec le code créateur actif) : remplacent temporairement l'avancement affiché
 function simulerProgression(mode) {
+  if (!state.modeDemo) { ouvrirVerrouDemo(); return; }
   const sample8 = [
     { nom: "Profil 1 (Idéaliste)",   famKey: "allo|aff|def", profKey: canonicalKey(["allo", "aff", "def", "savoir", "assure"]) },
     { nom: "Profil 2 (Relationnel)", famKey: "allo|cog|def", profKey: canonicalKey(["allo", "cog", "def", "savoir", "assure"]) },
@@ -5094,11 +5617,13 @@ function simulerProgression(mode) {
     state.step = 7;
   }
 
-  sauverSuitesGuildeStorage();
   render();
 }
 
 function render() {
+  const demoBanner = document.getElementById("demoBanner");
+  if (demoBanner) demoBanner.style.display = state.modeDemo ? "flex" : "none";
+  document.body.classList.toggle("demo-on", !!state.modeDemo);
   syncLateraliteUI();
   applyIlluminationTheme();
   renderStepper();
@@ -5114,8 +5639,10 @@ function render() {
 
   const creatorBar = document.getElementById("creatorFooterPanel");
   if (creatorBar) {
-    creatorBar.style.display = state.showCreatorTools ? "flex" : "none";
+    creatorBar.style.display = (state.showCreatorTools && state.modeDemo) ? "flex" : "none";
   }
+  const btnDemo = document.getElementById("btnDemoTools");
+  if (btnDemo) btnDemo.textContent = state.modeDemo ? "🛡️ Code créateur actif" : "🔒 Code créateur";
 }
 
 render();
@@ -5296,7 +5823,7 @@ function fitCameraToBubbles(smooth = true) {
 
   const scaleX = (w - padX * 2) / contentW;
   const scaleY = (h - padY * 2) / contentH;
-  camera.scale = Math.max(0.42, Math.min(1.05, Math.min(scaleX, scaleY)));
+  camera.scale = Math.max(w < 680 ? 0.28 : 0.42, Math.min(1.05, Math.min(scaleX, scaleY)));
 
   const centerX = (minX + maxX) / 2;
   const centerY = (minY + maxY) / 2;
@@ -5322,6 +5849,7 @@ function getOppositePoleObj(axeId, poleId) {
 function initBubblesPositions() {
   const rx = 380;
   const ry = 290;
+  const narrow = (window.innerWidth || 1000) < 680;
 
   const initialSpecs = [
     { axeId: "bras",    poleId: "off",     angle: -Math.PI / 2 },
@@ -5348,6 +5876,19 @@ function initBubblesPositions() {
     y: -270,
     idx: 5
   });
+
+  // V9 : sur téléphone (écran étroit), les sphères sont disposées en colonne en zigzag
+  // (distance > CONNECT_THRESHOLD entre voisines pour éviter toute fusion au départ),
+  // afin que rien ne sorte de l'écran.
+  if (narrow) {
+    const ordre = ["lateralite", "bras", "oreille", "doigt", "main", "poignet"];
+    ordre.forEach((id, k) => {
+      const b = neantState.bubbles.find(x => x.id === id);
+      if (!b) return;
+      b.x = (k % 2 === 0) ? -120 : 120;
+      b.y = Math.round(-625 + k * 250);
+    });
+  }
 }
 
 function overlapsBubble(px, py, bx, by, padX = 215, padY = 82) {
@@ -6285,6 +6826,10 @@ function exitNeantView() {
 // ============================================================================
 
 function exporterGuildeJSON() {
+  if (state.modeDemo) {
+    showToast("🛡️ Code créateur actif", "Désactivez le code créateur avant d'exporter les vrais profils.", "#f59e0b", "🛡️");
+    return;
+  }
   const data = {
     app: "La Trinite Gestuelle",
     version: "V3",
@@ -6306,6 +6851,10 @@ function exporterGuildeJSON() {
 }
 
 function declencherImportJSON() {
+  if (state.modeDemo) {
+    showToast("🛡️ Code créateur actif", "Désactivez le code créateur avant d'importer une sauvegarde.", "#f59e0b", "🛡️");
+    return;
+  }
   const inp = document.getElementById("importJsonInput");
   if (inp) {
     inp.value = "";
