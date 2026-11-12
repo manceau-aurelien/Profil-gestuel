@@ -1526,6 +1526,11 @@ body[data-illumination="8"] .top-nav {
   .miroir-niv3-title { font-size: 16px; font-weight: 900; color: #fff; margin-top: 3px; }
   .miroir-niv3-text p { font-size: 12.5px; color: #cbd5e1; margin: 4px 0 0 0; line-height: 1.55; }
   .miroir-niv3-btn { border-color: #38bdf8 !important; color: #7dd3fc !important; font-weight: 800; background: rgba(56,189,248,0.12) !important; padding: 10px 18px; }
+  .miroir-niv3-card.locked { background: rgba(9,13,22,0.75); border: 1px dashed #334155; }
+  .miroir-niv3-card.locked .miroir-niv3-kicker { color: #64748b; }
+  .miroir-niv3-card.locked .miroir-niv3-title { color: #94a3b8; }
+  .miroir-niv3-card.locked .miroir-niv3-text p { color: #64748b; }
+  .miroir-niv3-card.locked .miroir-niv3-btn { border-color: #334155 !important; color: #64748b !important; background: transparent !important; cursor: not-allowed; }
   @media (max-width: 600px) { .miroir-niv3-btn { width: 100%; justify-content: center; } }
 
   @media print {
@@ -1592,9 +1597,6 @@ body[data-illumination="8"] .top-nav {
             <button class="lat-btn" id="btnLatG" onclick="setGaucher(true)">🤚 Gaucher</button>
           </div>
         </div>
-        <button class="btn-secondary" id="btnMiroirTop" style="display:none; border-color:#38bdf8; color:#7dd3fc; font-weight:800;" onclick="ouvrirMiroirRelationnel()" title="Comparer 2 profils : le Miroir des 8 familles (débloqué au Niveau 3)">
-          👥 Miroir de Binôme
-        </button>
         <button class="btn-secondary" id="btnNewPlayer" style="display:none; border-color:var(--gold); color:var(--gold-light);" onclick="recommencer()" title="Tester et enregistrer une nouvelle personne">
           + Nouveau Profil
         </button>
@@ -2991,13 +2993,6 @@ function applyIlluminationTheme() {
   if (btnNew) {
     const showNew = state.guilde.length > 0 || state.bras !== null || state.step > 1;
     btnNew.style.display = showNew ? "inline-flex" : "none";
-  }
-
-  const btnMiroir = document.getElementById("btnMiroirTop");
-  if (btnMiroir) {
-    // Le Miroir de Binôme (Les 8 Familles • 3 gestes) se débloque au Niveau 3
-    const showMiroir = stats.famsCount >= 1;
-    btnMiroir.style.display = showMiroir ? "inline-flex" : "none";
   }
 
   const lumBadge = document.getElementById("illuminationStatus");
@@ -4680,20 +4675,25 @@ function renderStep5Familles() {
         ${progressionBannerHTML}
       </div>
 
-      <div class="miroir-niv3-card">
+      <div class="miroir-niv3-card ${stats.all8Unlocked ? '' : 'locked'}">
         <div class="miroir-niv3-text">
-          <div class="miroir-niv3-kicker">👥 Le Miroir de Binôme • Les 8 Familles</div>
+          <div class="miroir-niv3-kicker">${stats.all8Unlocked ? '👥 Le Miroir de Binôme • Les 8 Familles' : `🔒 Le Miroir de Binôme • Scellé (${stats.famsCount} / 8 Familles)`}</div>
           <div class="miroir-niv3-title">Comparer deux familles ou deux personnes</div>
-          <p>Choisissez deux familles, ou deux personnes de votre collection : leurs trois gestes (Oreille, Doigt, Bras) révèlent ce qui les rapproche, ce qui se joue entre elles et ce que chacun doit pouvoir assumer.</p>
+          <p>${stats.all8Unlocked
+            ? 'Choisissez deux familles, ou deux personnes de votre collection : leurs trois gestes (Oreille, Doigt, Bras) révèlent ce qui les rapproche, ce qui se joue entre elles et ce que chacun doit pouvoir assumer.'
+            : `Se débloque lorsque les <strong>8 Familles à 3 gestes</strong> sont réunies : il en reste <strong>${8 - stats.famsCount}</strong> à incarner.`}</p>
+          ${stats.all8Unlocked ? '' : `<div class="palier-mini-bar" style="margin-top:8px; max-width:320px;"><div class="palier-mini-bar-fill" style="width:${Math.round(stats.famsCount / 8 * 100)}%;"></div></div>`}
         </div>
-        <button class="btn-secondary miroir-niv3-btn" onclick="ouvrirMiroirRelationnel()">Ouvrir le Miroir →</button>
+        ${stats.all8Unlocked
+          ? '<button class="btn-secondary miroir-niv3-btn" onclick="ouvrirMiroirRelationnel()">Ouvrir le Miroir →</button>'
+          : '<button class="btn-secondary miroir-niv3-btn" disabled>🔒 Scellé</button>'}
       </div>
 
       <div style="margin-bottom:22px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
           <h3 style="font-size:16px; color:var(--gold-light); margin:0;">📜 Personnes enregistrées (${state.guilde.length})</h3>
           <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-            <button class="btn-secondary" style="font-size:11.5px; padding:5px 9px; background:rgba(56,189,248,0.15); border-color:#38bdf8; color:#38bdf8; font-weight:800;" onclick="ouvrirMiroirRelationnel()" title="Comparer deux profils et analyser leur synergie relationnelle">👥 Comparer 2 Profils</button>
+            ${stats.all8Unlocked ? `<button class="btn-secondary" style="font-size:11.5px; padding:5px 9px; background:rgba(56,189,248,0.15); border-color:#38bdf8; color:#38bdf8; font-weight:800;" onclick="ouvrirMiroirRelationnel()" title="Comparer deux profils et analyser leur synergie relationnelle">👥 Comparer 2 Profils</button>` : ''}
             <button class="btn-secondary" style="font-size:11.5px; padding:5px 9px;" onclick="exporterGuildeJSON()" title="Exporter la collection en JSON">💾 Exporter</button>
             <button class="btn-secondary" style="font-size:11.5px; padding:5px 9px;" onclick="declencherImportJSON()" title="Importer une sauvegarde JSON">📂 Importer</button>
             <button class="btn-secondary" style="font-size:11.5px; padding:5px 9px;" onclick="ouvrirFicheImprimable()" title="Imprimer ou enregistrer en PDF">🖨️ Fiche PDF</button>
@@ -6954,7 +6954,7 @@ function imprimerFicheActive() {
 
 // ============================================================================
 // MODULE DU COMPARATEUR RELATIONNEL (LE MIROIR DE BINÔME)
-// - Niveau 3 : Débloque le Miroir des 8 Familles (3 gestes : Oreille, Doigt, Bras)
+// - Niveau 3 : le Miroir des 8 Familles (3 gestes : Oreille, Doigt, Bras) se débloque à 8 / 8 Familles
 // ============================================================================
 
 let relOverrideLat = { A: null, B: null }; // Permet de tester l'inversion Droitier/Gaucher en direct sur A ou B
@@ -7447,10 +7447,10 @@ let m3Focus = null, m3Details = [];
 
 function ouvrirMiroirRelationnel(preSelectIdA = null, preSelectIdB = null) {
   const stats = getCollectionStats();
-  if (stats.famsCount < 1) {
+  if (!stats.all8Unlocked) {
     showToast(
-      "🔒 Miroir de Binôme Scellé (Requis : Niveau 3)",
-      "Incarnez d'abord au moins 1 Famille à 3 gestes pour débloquer le Miroir des 8 familles au Niveau 3.",
+      "🔒 Miroir de Binôme Scellé (Requis : 8 / 8 Familles)",
+      `Incarnez au moins 1 personne dans chacune des 8 Familles à 3 gestes pour débloquer le Miroir au Niveau 3 (actuellement ${stats.famsCount} / 8).`,
       "#38bdf8",
       "🔒"
     );
